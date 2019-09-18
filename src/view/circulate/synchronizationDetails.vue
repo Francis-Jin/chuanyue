@@ -62,7 +62,7 @@
 
                     <div class="allP">
                         <p class="allPTitle"><span>批改评语</span></p>
-                        <p class="allPContent">{{info.schoolworkCorrectVo.remark}}</p>
+                        <div class="allPContent" v-html="info.schoolworkCorrectVo.remark"></div>
                     </div>
 
                     <div class="item">

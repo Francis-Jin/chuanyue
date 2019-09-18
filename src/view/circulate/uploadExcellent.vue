@@ -193,15 +193,17 @@ import draggable from 'vuedraggable'
                         let parms = that.$Qs.stringify({
                             qrCodeContent: res.resultStr
                         })
-                        that.$api.countSchoolworkInfoExistApi(parms).then(res=>{
-                            alert(JSON.stringify(res))
-                            if(res.data.code * 1 === 200){
+                        that.$api.countSchoolworkInfoExistApi(parms).then(res => {
+                            if (res.data.code * 1 === 200) {
+                                that.$dialog.alert({
+                                    message: '该二维码可用',
+                                    confirmButtonColor: '#4276DF'
+                                })
                                 that.isCanUploadType = true
                                 that.paperId = res.data.data.paperId
                                 that.paperNumber = res.data.data.paperNumber
                                 that.paperIdentifier = res.data.data.paperIdentifier
-                                alert(this.isCanUploadType)
-                            }else{
+                            } else {
                                 that.isCanUploadType = false
                                 that.$dialog.alert({
                                     message: res.data.message,

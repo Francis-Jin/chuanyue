@@ -91,7 +91,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="contentLists">
+                <div v-if="contentLists.length > 0" class="contentLists">
 
                     <div v-if="userIdentity !== 2"
                         class="init"
@@ -194,73 +194,76 @@
 
                 </div>
 
-                <div v-if="isShowAddUpload" class="modalWrap">
-                    <div class="modalContent">
-                        <div class="bindTitle">
-                            <span>新建批次号</span>
-                        </div>
-                        <div class="formLists">
-                            <div class="item">
-                                <div class="inputContent">
-                                    <span class="color_4276DF">批次号(自动生成)</span>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="inputContent">
-                                    <!--<input type="number" placeholder="请输入班级">-->
-                                    <template>
-                                        <el-select v-model="selectedGrade" placeholder="请选择年级" @change="gradeChangeFn($event)">
-                                            <el-option
-                                                v-for="item in optionsGrade"
-                                                :key="item.value"
-                                                :label="item.label"
-                                                :value="item.value">
-                                            </el-option>
-                                        </el-select>
-                                    </template>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="inputContent">
-                                    <!--<input type="number" placeholder="请输入班级">-->
-                                    <template>
-                                        <el-select v-model="selectedClass" placeholder="请选择班级">
-                                            <el-option
-                                                v-for="item in optionsClass"
-                                                :key="item.value"
-                                                :label="item.label"
-                                                :value="item.value">
-                                            </el-option>
-                                        </el-select>
-                                    </template>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="inputContent">
-                                    <template>
-                                        <el-select v-model="selectedType" placeholder="请选择批改类型">
-                                            <el-option
-                                                v-for="item in optionsType"
-                                                :key="item.value"
-                                                :label="item.label"
-                                                :value="item.value">
-                                            </el-option>
-                                        </el-select>
-                                    </template>
-                                </div>
+                <div v-else style="width: 100%;text-align: center; color: #999;line-height: 200px;">
+                    <span>暂无数据</span>
+                </div>
+
+            </div>
+            <div v-if="isShowAddUpload" class="modalWrap">
+                <div class="modalContent">
+                    <div class="bindTitle">
+                        <span>新建批次号</span>
+                    </div>
+                    <div class="formLists">
+                        <div class="item">
+                            <div class="inputContent">
+                                <span class="color_4276DF">批次号(自动生成)</span>
                             </div>
                         </div>
-                        <div class="btn">
-                            <div class="subBtn" @click="addUploadFn">
-                                <span>取消</span>
+                        <div class="item">
+                            <div class="inputContent">
+                                <!--<input type="number" placeholder="请输入班级">-->
+                                <template>
+                                    <el-select v-model="selectedGrade" placeholder="请选择年级" @change="gradeChangeFn($event)">
+                                        <el-option
+                                            v-for="item in optionsGrade"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </template>
                             </div>
-                            <div class="subBtn" @click="toLinkPage">
-                                <span>确定</span>
+                        </div>
+                        <div class="item">
+                            <div class="inputContent">
+                                <!--<input type="number" placeholder="请输入班级">-->
+                                <template>
+                                    <el-select v-model="selectedClass" placeholder="请选择班级">
+                                        <el-option
+                                            v-for="item in optionsClass"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="inputContent">
+                                <template>
+                                    <el-select v-model="selectedType" placeholder="请选择批改类型">
+                                        <el-option
+                                            v-for="item in optionsType"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </template>
                             </div>
                         </div>
                     </div>
+                    <div class="btn">
+                        <div class="subBtn" @click="addUploadFn">
+                            <span>取消</span>
+                        </div>
+                        <div class="subBtn" @click="toLinkPage">
+                            <span>确定</span>
+                        </div>
+                    </div>
                 </div>
-
             </div>
 
         </van-pull-refresh>
@@ -286,15 +289,15 @@
                             </div>
                         </div>
                     </div>
-                    <van-popup v-model="showDatePicker" position="bottom">
-                        <van-datetime-picker
-                            v-model="currentDate"
-                            type="date"
-                            @cancel="showDatePicker = false"
-                            @confirm="confirmSelectedDate"
-                        />
-                    </van-popup>
                 </div>
+            </van-popup>
+            <van-popup v-model="showDatePicker" position="bottom">
+                <van-datetime-picker
+                    v-model="currentDate"
+                    type="date"
+                    @cancel="showDatePicker = false"
+                    @confirm="confirmSelectedDate"
+                />
             </van-popup>
         </div>
         <!--添加上传-->

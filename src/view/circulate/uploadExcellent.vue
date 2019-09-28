@@ -1,42 +1,40 @@
 <template>
-    <div>
+    <div class="main">
 
-        <!--<Banner></Banner>-->
+        <div v-if="isWhatUpload === 3" class="topImg">
+            <img src="../../assets/images/tbfd_img.png" alt="">
+        </div>
 
-        <div v-if="userIdentity != 1" class="selectedStudent">
+        <div v-if="isWhatUpload === 3" class="topModel">
+
+            <div class="example">
+                <span>请先选择学员，再扫描同步辅导试卷右上方的二维码。</span>
+            </div>
+        </div>
+
+        <div v-if="isWhatUpload != 3" class="topModel">
+            <div class="example">
+                <span>您的
+                    <span v-if="isWhatUpload === 1" style="color: #4276DF">作文批改 </span>
+                    <span v-if="isWhatUpload === 2" style="color: #4276DF">作文精批 </span>剩余次数为
+                </span>
+                <span class="num"><span style="color: #4276DF">{{surplusNum}}</span></span>
+                <span v-if="userIdentity != 1 && surplusNum === 0 && isShowBuy">，请先购买</span>。
+            </div>
+            <div v-if="userIdentity != 1 && surplusNum === 0 && isShowBuy" class="goBuy">
+                <span @click="goBuy">去购买</span>
+            </div>
+        </div>
+
+        <div v-if="(userIdentity != 1 && surplusNum !== 0 && isShowSelectedStu) || isWhatUpload === 3"
+             class="selectedStudent">
             <div class="l" @click="showPickerFn">
-                <span>请先选择学员:</span><span class="name"
-                                          :class="studentName != '请选择学生名字' ? 'active' : ''">{{studentName}}</span>
+                <van-cell-group :border="false">
+                    <van-field :border="false" v-model="studentName" disabled="disabled" placeholder="请选择学员"/>
+                </van-cell-group>
                 <div class="icon">
                     <van-icon name="arrow" size=".28rem" color="#999"/>
                 </div>
-            </div>
-            <div v-if="isShowAddBtn" class="addStuBtn" @click="toPageFn">
-                <span>添加</span>
-            </div>
-        </div>
-
-        <div v-if="isWhatUpload != 3"  class="topModel">
-
-            <div class="example">
-                <span>您当前选择 “
-                    <span v-if="isWhatUpload === 1">作文批改</span>
-                    <span v-if="isWhatUpload === 2">作文精批</span>
-                    <span v-if="isWhatUpload === 3">同步辅导</span> ” 服务，您的 “
-                    <span v-if="isWhatUpload === 1">作文批改</span>
-                    <span v-if="isWhatUpload === 2">作文精批</span>
-                    <span v-if="isWhatUpload === 3">同步辅导</span> ” 剩余次数为</span>
-                <span class="num">“ <span>{{surplusNum}}</span> ”</span>
-                <span>次</span>
-            </div>
-            <div v-if="userIdentity != 1 && surplusNum === 0 && isShowBuy" class="goBuy">
-                <span @click="goBuy">立即购买</span>
-            </div>
-        </div>
-        <div v-if="isWhatUpload === 3"  class="topModel">
-
-            <div class="example">
-                <span>您当前选择 “ <span v-if="isWhatUpload === 3">同步辅导</span> ” 服务，扫描试卷上方二维码，测试试卷是否可用</span>
             </div>
         </div>
 
@@ -46,12 +44,12 @@
 
         <div class="bottomModel" v-if="(surplusNum != 0 && isCanUploadType) || (isWhatUpload === 3 && isCanUploadType)">
 
-            <div class="bTitle">
-                <span>温馨提示</span>
-            </div>
+            <!--<div class="bTitle">-->
+                <!--<span>温馨提示</span>-->
+            <!--</div>-->
 
             <div class="tipsContent">
-                <span>每次最多上传6页，请点击下列图片上传框依次拍照，照片要求清晰度高，拍照完毕后，点击提交即可</span>
+                <span>请将写好的作文拍照上传，照片要求文字清晰可见，否则会影响批改。</span>
             </div>
 
             <div class="uploadImgWrap">
@@ -85,16 +83,6 @@
                 </div>
             </div>
         </div>
-
-        <van-popup v-model="showPicker" position="bottom">
-            <van-picker
-                show-toolbar
-                :columns="columns"
-                @cancel="showPicker = false"
-                @confirm="onConfirm"
-            />
-        </van-popup>
-
         <div style="height: 60px"></div>
     </div>
 </template>
@@ -116,31 +104,41 @@ import draggable from 'vuedraggable'
                 value: '',
                 showPicker: false,
                 columns: [],
-                studentName: '请选择学生名字',
+                studentName: '',
                 isShowAddBtn: false,
                 pageUrl: '',
                 studentId: '',
                 userIdentity: localStorage.getItem('identity') * 1,
                 isShowSuccessToast: false,
                 fileList: [],
-                scanResult:'', //扫描二维码结果
-                isCanUploadType:false, //是否显示上传提交
-                isShowBuy:false, //是否立即购买
+                scanResult: '', //扫描二维码结果
+                isCanUploadType: false, //是否显示上传提交
+                isShowBuy: false, //是否立即购买
                 surplusNum: '', // 默认剩余上传次数
                 isWhatUpload: this.$route.query.isWhat * 1,
                 uploadSuccessLists: [], // 上传成功后存储的集合
                 paperId: 0,
                 paperNumber: 0,
-                paperIdentifier: 0
+                paperIdentifier: 0,
+                isShowSelectedStu: false,
+                selectedStuItem: null
             }
         },
         mounted () {
-
-            if(this.isWhatUpload === 3) {
-                if(!localStorage.getItem('isCanUpload')){
-                    this.alertSyncFn()
+            console.log(JSON.parse(sessionStorage.getItem('selectedStuItem')))
+            if (JSON.parse(sessionStorage.getItem('selectedStuItem'))) {
+                this.studentName = JSON.parse(sessionStorage.getItem('selectedStuItem')).name
+                this.selectedStuItem = JSON.parse(sessionStorage.getItem('selectedStuItem'))
+                this.studentId = this.selectedStuItem.id
+                this.trainingSchoolId = this.selectedStuItem.trainingSchoolId
+                this.classId = this.selectedStuItem.classId
+                this.grade = this.selectedStuItem.grade
+            }
+            if (this.isWhatUpload === 3) {
+                if (!localStorage.getItem('isCanUpload')) {
+                    // this.alertSyncFn()
                 }
-            } else{
+            } else {
                 this.isCanUploadType = true
             }
 
@@ -169,22 +167,22 @@ import draggable from 'vuedraggable'
             },
 
             /** 同步辅导弹出提示. */
-            alertSyncFn(){
+            alertSyncFn () {
                 this.$dialog.confirm({
                     title: '同步辅导试卷审核',
                     message: '扫一扫试卷上方二维码，识别该试卷是否可上传',
-                    cancelButtonText:'返回',
-                    cancelButtonColor:'#999',
-                    confirmButtonText:'知道了',
+                    cancelButtonText: '返回',
+                    cancelButtonColor: '#999',
+                    confirmButtonText: '知道了',
                 }).then(() => {
                     localStorage.setItem('isCanUpload', 1)
                 }).catch(() => {
                     this.$router.go(-1)
-                });
+                })
             },
 
             /** 扫一扫二维码判断试卷有效性. */
-            scanQRCodeFn(){
+            scanQRCodeFn () {
                 let that = this
                 wx.scanQRCode({
                     needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
@@ -212,7 +210,7 @@ import draggable from 'vuedraggable'
                             }
                         })
                     }
-                });
+                })
             },
 
             /** 注册微信JSSDK. */
@@ -251,30 +249,6 @@ import draggable from 'vuedraggable'
             afterRead (file) {
             },
 
-            /** 普通用户获取学生列表. */
-            simpleGetChildresDetails () {
-                let parm = this.$Qs.stringify({
-                    userId: JSON.parse(sessionStorage.getItem('userInfo')).id
-                })
-
-                this.$api.simpleParentGetChildrenDetailsApi(parm).then(res => {
-                    if (res.data.code * 1 === 200) {
-                        let lists = res.data.data
-                        let columns = []
-                        lists.forEach(e => {
-                            columns.push({
-                                text: e.name,
-                                id: e.id,
-                                grade: e.grade,
-                                classId: 0,
-                                trainingSchoolId: 0
-                            })
-                        })
-                        this.columns = columns
-                    }
-                })
-            },
-
             /** 家长获取学生详情. */
             getChildresDetails () {
                 let parm = this.$Qs.stringify({
@@ -298,31 +272,14 @@ import draggable from 'vuedraggable'
                 })
             },
 
-            /** 是否显示弹出内容. */
+            /** 跳转学生列表选择学生. */
             showPickerFn () {
-                if (this.columns.length === 0) {
-                    this.$toast('请先添加学生')
-                    this.isShowAddBtn = true
-                } else {
-                    this.showPicker = true
-                }
-            },
-
-            /** 跳转添加学生页面. */
-            toPageFn () {
                 this.$router.push({
-                    path: '/myCenterIndex'
+                    path: '/myChildsLists',
+                    query: {
+                        'uploadSelectedStu': true
+                    }
                 })
-            },
-
-            /** 确认选择. */
-            onConfirm (value) {
-                this.studentName = value.text
-                this.studentId = value.id
-                this.grade = value.grade
-                this.classId = value.classId
-                this.trainingSchoolId = value.trainingSchoolId
-                this.showPicker = false
             },
 
             /** 获取上传次数. */
@@ -335,9 +292,10 @@ import draggable from 'vuedraggable'
                 this.$api.getSurplusNumApi(parms).then(res => {
                     if (res.data.code * 1 === 200) {
                         this.surplusNum = res.data.data
-                        if(res.data.data === 0){
+                        this.isShowSelectedStu = true
+                        if (res.data.data === 0) {
                             this.isShowBuy = true
-                        }else{
+                        } else {
                             this.isShowBuy = false
                         }
                     }
@@ -347,11 +305,9 @@ import draggable from 'vuedraggable'
             /** 点击提交按钮. */
             submitFile () {
 
-                if (this.userIdentity !== 1) {
-                    if (this.studentId === '') {
-                        this.$toast('请选择学生')
-                        return false
-                    }
+                if (this.userIdentity !== 1 && this.studentId === '') {
+                    this.$toast('请选择学生')
+                    return false
                 }
 
                 if (this.surplusNum * 1 === 0 && this.isWhatUpload !== 3) {
@@ -403,9 +359,9 @@ import draggable from 'vuedraggable'
                             correctType: this.$route.query.isWhat,
                             photoStr: JSON.stringify(upLists),
                             createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
-                            paperId:this.paperId,
-                            paperNumber:this.paperNumber,
-                            paperIdentifier:this.paperIdentifier
+                            paperId: this.paperId,
+                            paperNumber: this.paperNumber,
+                            paperIdentifier: this.paperIdentifier
 
                         })
                     } else {
@@ -418,9 +374,9 @@ import draggable from 'vuedraggable'
                             correctType: this.$route.query.isWhat,
                             photoStr: JSON.stringify(upLists),
                             createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
-                            paperId:this.paperId,
-                            paperNumber:this.paperNumber,
-                            paperIdentifier:this.paperIdentifier
+                            paperId: this.paperId,
+                            paperNumber: this.paperNumber,
+                            paperIdentifier: this.paperIdentifier
                         })
                     }
 
@@ -453,10 +409,19 @@ import draggable from 'vuedraggable'
         touch-action: pan-y;
     }
 
+    .topImg {
+        width: 100%;
+        font-size: 0;
+
+        img {
+            max-width: 100%;
+        }
+    }
+
     .topModel {
-        width: 280px;
-        margin: 0 auto;
-        padding-top: .6rem;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 20px;
 
         .title {
             height: 70px;
@@ -467,7 +432,6 @@ import draggable from 'vuedraggable'
         }
 
         .example {
-            text-indent: .64rem;
             color: #666666;
 
             .num {
@@ -489,11 +453,24 @@ import draggable from 'vuedraggable'
         }
     }
 
-    .scanWrap{
+    .scanWrap {
         text-align: center;
         line-height: 1rem;
-        margin: .2rem auto;
-        span{
+        padding-top: 30px;
+        position: relative;
+
+        &::before {
+            display: block;
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 10px;
+            background: #f5f5f5;
+        }
+
+        span {
             padding: .26rem 1rem;
             color: #fff;
             letter-spacing: .1rem;
@@ -503,8 +480,20 @@ import draggable from 'vuedraggable'
     }
 
     .bottomModel {
-        width: 90%;
-        margin: 20px auto;
+        width: 100%;
+        padding: 20px 20px 0;
+        position: relative;
+
+        &::before {
+            display: block;
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 10px;
+            background: #f5f5f5;
+        }
 
         .bTitle {
             height: 30px;
@@ -517,7 +506,7 @@ import draggable from 'vuedraggable'
         .tipsContent {
             font-size: .24rem;
             color: #B0B0B0;
-            text-indent: .48rem;
+            /*text-indent: .48rem;*/
         }
 
         .uploadImgWrap {
@@ -590,13 +579,23 @@ import draggable from 'vuedraggable'
     }
 
     .selectedStudent {
-        text-indent: 10%;
-        padding-top: .6rem;
+        padding: 20px 10px 10px;
         position: relative;
 
+        &::before {
+            display: block;
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 10px;
+            background: #f5f5f5;
+        }
+
         .name {
-            margin-left: .2rem;
-            color: #999;
+            /*margin-left: .2rem;*/
+            color: #333;
 
             &.active {
                 color: #666;
@@ -606,21 +605,8 @@ import draggable from 'vuedraggable'
         .icon {
             position: absolute;
             right: 10%;
-            top: 0;
-            padding-top: .6rem;
+            top: 32px;
         }
 
-        .addStuBtn {
-            text-align: center;
-            line-height: 1rem;
-            margin-top: .4rem;
-
-            span {
-                padding: .2rem 1rem;
-                border-radius: .6rem;
-                color: #fff;
-                background: #2b85e4;
-            }
-        }
     }
 </style>

@@ -13,7 +13,8 @@ module.exports = {
     proxyTable: {
         '/api': {
             // target: 'http://tellsea.natapp1.cc/chuanyue',
-            target: 'http://houtan.zhiyanginfo.top/chuanyue/',
+            target: 'http://hidkee.4kb.cn/chuanyue/',
+            // target: 'http://houtan.zhiyanginfo.top/chuanyue/',
             changeOrigin: true,     //跨域                                
             pathRewrite: {
                 '^/api': '/'

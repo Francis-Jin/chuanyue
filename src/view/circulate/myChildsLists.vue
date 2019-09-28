@@ -1,28 +1,47 @@
 <template>
-    <div>
+    <div class="main">
         <div class="main relative">
             <div class="topImg">
                 <img src="../../assets/images/banner.png" alt="" />
             </div>
             <div class="contentLists">
                 <div class="item margin_top_20 padding_top_bottom_10px">
-                    <van-swipe-cell v-for="(item, index) in lists" :key="index">
-                        <van-cell-group>
-                            <van-cell
-                                :title="item.name"
-                                :value="item.trainingSchoolName"
-                                :icon="require('../../assets/icon/my_xsxm.png')"
-                                is-link
-                                @click="toPageFn(item.id)"
-                            />
-                        </van-cell-group>
-                        <template slot="right">
-                            <van-button square type="danger" text="删除" @click="deleteStudentFn(item.id)"/>
-                        </template>
-                    </van-swipe-cell>
+                    <div  v-if="lists.length > 0" >
+                        <van-swipe-cell  v-for="(item, index) in lists" :key="index">
+                            <van-cell-group>
+                                <van-cell
+                                    :title="item.name"
+                                    :value="item.trainingSchoolName"
+                                    :icon="require('../../assets/icon/my_xsxm.png')"
+                                    @click="toPageFn(item.id)">
+                                    <span v-if="!uploadSelectedStu"><i class="iconfont icon-right"></i></span>
+                                    <span v-if="uploadSelectedStu && !item.selected"><i class="iconfont icon-radio"></i></span>
+                                    <span v-if="uploadSelectedStu && item.selected"><i class="iconfont icon-radiobutton" style="color:#4276df"></i></span>
+                                </van-cell>
+                            </van-cell-group>
+                            <!--<template slot="right">-->
+                                <!--<van-button square type="danger" text="删除" @click="deleteStudentFn(item.id)"/>-->
+                            <!--</template>-->
+                        </van-swipe-cell>
+                    </div>
+                    <div v-if="isShowNotData && lists.length == 0" style="width: 100%;text-align: center; color: #999;line-height: 200px;">
+                        <span>提示：你还没有学员，请先添加。</span>
+                    </div>
                 </div>
+
             </div>
         </div>
+
+        <!--添加学员按钮-->
+        <div class="addStudents" @click="toPageFnAdd('/addChildren?bind=false&listsAdd=true')">
+            <span>+</span>
+        </div>
+
+        <!--上传页面过来选择学员-->
+        <div v-if="uploadSelectedStu && lists.length > 0" class="selectedStu" @click="goBackUploadFn">
+            <span>确 定</span>
+        </div>
+        <div style="height: 70px"></div>
     </div>
 </template>
 
@@ -31,7 +50,10 @@ export default {
   data () {
     return {
       identity: localStorage.getItem('identity') * 1,
-      lists: []
+      lists: [],
+      isShowNotData: false,
+      uploadSelectedStu: this.$route.query.uploadSelectedStu,
+      selectedStuId: ''
     }
   },
   mounted () {
@@ -45,7 +67,14 @@ export default {
       })
       this.$api.parentGetChildrenDetailsApi(parm).then(res => {
         if (res.data.code * 1 === 200) {
-          this.lists = this.lists.concat(res.data.data)
+          let arr = []
+          res.data.data.forEach(item => {
+            item.selected = false
+            arr.push(item)
+          })
+          console.log(arr)
+          this.lists = arr
+          this.isShowNotData = true
         }
       })
     },
@@ -59,25 +88,55 @@ export default {
       })
       this.$api.deleteStudentApi(parm).then(res => {
         if (res.data.code * 1 === 200) {
-          if (this.identity === 2) {
-            this.getChildresDetails()
-          } else {
-            this.simpleGetChildresDetails()
-          }
+          this.lists = []
+          this.getChildresDetails()
           this.$toast.success(res.data.message)
         }
       })
     },
 
     /** 跳转页面. */
+    toPageFnAdd (path) {
+      this.$router.push({
+        path: path
+      })
+    },
+
+    /** 跳转页面. */
     toPageFn (itemid) {
       sessionStorage.setItem('childsLits', JSON.stringify(this.lists))
-      this.$router.push({
-        path: '/seayMyChilds',
-        query: {
-          itemId: itemid
-        }
-      })
+
+      if (!this.uploadSelectedStu) {
+        this.$router.push({
+          path: '/seayMyChilds',
+          query: {
+            itemId: itemid
+          }
+        })
+      } else {
+        this.lists.forEach(item => {
+          if (itemid === item.id) {
+            this.selectedStuId = itemid
+            sessionStorage.setItem('selectedStuItem', JSON.stringify(item))
+            item.selected = true
+          } else {
+            item.selected = false
+          }
+        })
+      }
+    },
+
+    /** 返回上传页面. */
+    goBackUploadFn () {
+      if (!this.selectedStuId) {
+        this.$toast({
+          duration: 1000,
+          message: '请选择学生'
+        })
+        return false
+      } else {
+        this.$router.go(-1)
+      }
     }
 
     /** end. */
@@ -85,6 +144,38 @@ export default {
 }
 </script>
 <style scoped lang="less">
+    .main{
+        position: relative;
+        min-height: 80vh;
+    }
+    .addStudents{
+        position: fixed;
+        right: 10px;
+        bottom:100px;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        line-height: 60px;
+        background: #fff;
+        color: #409eff;
+        font-weight: 600;
+        font-size: 30px;
+        border-radius: 50%;
+        box-shadow: 0 0 10px 2px #f5f5f5;
+    }
+    .selectedStu{
+        position: absolute;
+        left: 50%;
+        bottom: 10px;
+        margin-left: -80px;
+        width: 160px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        color: #fff;
+        background: #409eff;
+        border-radius: 4px;
+    }
 .topImg {
     width: 100%;
     height: 200px;

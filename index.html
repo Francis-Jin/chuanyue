@@ -7,13 +7,38 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_1323576_l6xgo6ymiy8.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1323576_c5zkpclh58l.css">
     <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script src="./src/assets/js/jweixin-1.4.0.js"></script>
+    <style type="text/css">
+        /**禁止页面长按复制*/
+        body {
+
+            -webkit-touch-callout:none;/*系统默认菜单被禁用*/
+
+            -webkit-user-select:none;/*webkit浏览器*/
+
+            -khtml-user-select:none;/*早起浏览器*/
+
+            -moz-user-select:none;/*火狐浏览器*/
+
+            -ms-user-select:none;/*IE浏览器*/
+
+            user-select:none;/*用户是否能够选中文本*/
+
+        }
+    </style>
 </head>
 <body>
 <div id="app"></div>
 <script type="text/javascript" src="static/circulateIndex.js"></script>
+<script type="text/javascript">
+
+    document.oncontextmenu = function (e) {
+        e.preventDefault()
+    }
+
+</script>
 <!-- built files will be auto injected -->
 </body>
 </html>

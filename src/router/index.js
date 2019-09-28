@@ -22,7 +22,7 @@ const router = new Router({
       path: '/bindUser',
       name: 'bindUser',
       meta: {
-        title: '身份验证'
+        title: '教师认证'
       },
       component: resolve => require(['@/view/circulate/bindUser'], resolve)
     },
@@ -32,7 +32,7 @@ const router = new Router({
       path: '/circulateIndex',
       name: 'circulateIndex',
       meta: {
-        title: '首页'
+        title: '传阅语文学习平台'
       },
       component: resolve => require(['@/view/circulate/circulateIndex'], resolve)
     },
@@ -81,7 +81,7 @@ const router = new Router({
       path: '/preferentialZone',
       name: 'preferentialZone',
       meta: {
-        title: '优惠专区'
+        title: '传阅商城'
       },
       component: resolve => require(['@/view/circulate/preferentialZone'], resolve)
     },
@@ -311,6 +311,15 @@ const router = new Router({
         title: '余量结果查询'
       },
       component: resolve => require(['@/view/circulate/remainingResult'], resolve)
+    },
+
+    {
+      path: '/customerService',
+      name: 'customerService',
+      meta: {
+        title: '客服中心'
+      },
+      component: resolve => require(['@/view/circulate/customerService'], resolve)
     },
 
     {

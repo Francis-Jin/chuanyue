@@ -20,8 +20,7 @@
                     </div>
                 </div>
                 <div v-if="isTrue" class="contentLists">
-                    <div class="item padding_top_bottom_10px"
-                    >
+                    <div class="item padding_top_bottom_10px">
                         <van-cell-group :border="false">
                             <!--<van-cell/>-->
                             <!--<van-cell-->
@@ -40,11 +39,20 @@
                             <!--&gt;兑换 <i class="iconfont icon-right"></i-->
                             <!--&gt;</span>-->
                             <!--</van-cell>-->
-                            <van-cell v-if="userIdentity == 0"
-                                      title="身份验证"
-                                      :icon="require('../../assets/icon/my_sfyz.png')"
-                                      is-link
-                                      @click="verificationAuthor"/>
+
+                            <van-cell
+                                title="个人资料"
+                                :icon="require('../../assets/icon/my_grzlxg.png')"
+                                is-link
+                                @click="toPageFn('/personalData')"
+                            />
+                            <van-cell
+                                v-if="userIdentity != 1"
+                                title="学员管理"
+                                :icon="require('../../assets/icon/my_jz_bdxx.png')"
+                                is-link
+                                @click="toPageFn('/myChildsLists')"
+                            />
                             <van-cell
                                 v-if="userIdentity === 1"
                                 title="培训机构"
@@ -52,12 +60,6 @@
                                 :value="userInfo.trainingSchoolName"
                                 is-link
                                 @click="toPageFn('/institutionalDetails')"
-                            />
-                            <van-cell
-                                title="个人资料"
-                                :icon="require('../../assets/icon/my_grzlxg.png')"
-                                is-link
-                                @click="toPageFn('/personalData')"
                             />
                         </van-cell-group>
                     </div>
@@ -115,38 +117,34 @@
                                 @click="toPageFn('/myCart')"/>
                         </van-cell-group>
                     </div>
-                    <div
-                        class="item padding_top_bottom_10px"
-                        v-if="userIdentity != 1">
+                    <div class="item padding_top_bottom_10px" v-if="userIdentity == 0">
                         <van-cell-group :border="false">
                             <!--<van-cell/>-->
-                            <van-cell
-                                title="查看学员"
-                                :icon="require('../../assets/icon/my_jz_bdxx.png')"
-                                is-link
-                                @click="toPageFn('/myChildsLists')"
-                            />
-                            <van-cell
-                                title="添加学员"
-                                :icon="require('../../assets/icon/my_sfyz.png')"
-                                is-link
-                                @click="toPageFn('/addChildren?bind=false')"
-                            />
-                            <van-cell
-                                v-if="userIdentity !== 0"
-                                title="绑定学员"
-                                :icon="require('../../assets/icon/my_sfyz.png')"
-                                is-link
-                                @click="toPageFn('/addChildren?bind=true')"
+                            <van-cell title="教师认证入口"
+                                      :icon="require('../../assets/icon/my_sfyz.png')"
+                                      is-link
+                                      @click="verificationAuthor"
                             />
                         </van-cell-group>
                     </div>
                     <div class="item padding_top_bottom_10px">
                         <van-cell-group :border="false">
                             <van-cell
-                                title="在线客服"
+                                title="客服电话"
                                 :icon="require('../../assets/icon/my_kf.png')">
                                 <a :href="'tel:' + kfTel" style="color: #666;padding-top: .4rem;box-sizing: border-box">{{kfTel}}</a>
+                            </van-cell>
+                            <van-cell
+                                v-if="weixinVal"
+                                title="客服微信"
+                                icon="chat-o"
+                                :value="weixinVal">
+                            </van-cell>
+                            <van-cell
+                                v-if="qqVal"
+                                title="客服QQ"
+                                :icon="require('../../assets/icon/qq.png')"
+                                :value="qqVal">
                             </van-cell>
                         </van-cell-group>
                     </div>
@@ -170,10 +168,15 @@ export default {
       userInfo: '',
       isTrue: false,
       kfTel: '',
+      qqVal: '',
+      weixinVal: '',
       userInfoPhotoUrl: ''
     }
   },
   mounted () {
+    if (!this.$route.query.clear) {
+      localStorage.clear()
+    }
     if (localStorage.getItem('oid') === 'undefined' || !localStorage.getItem('oid')) {
       localStorage.setItem('oid', this.$route.query.OID)
     }
@@ -181,16 +184,17 @@ export default {
     this.getSystemMessage()
   },
   methods: {
-
     /** 获取客服电话. */
     getSystemMessage () {
       this.$api.getSystemMessageApi().then(res => {
+        console.log(res)
         if (res.data.code * 1 === 200) {
           this.kfTel = res.data.data.platformPhone
+          this.qqVal = res.data.data.qq
+          this.weixinVal = res.data.data.weixin
         }
       })
     },
-
     /** 修改用户头像. */
     afterRead (e) {
       // 此时可以自行将文件上传至服务器
@@ -225,8 +229,14 @@ export default {
 
     /** 跳转选择身份. */
     verificationAuthor () {
+      // this.$router.push({
+      //   path: '/author'
+      // })
       this.$router.push({
-        path: '/author'
+        path: 'bindUser',
+        query: {
+          identity: 1
+        }
       })
     },
 
@@ -361,13 +371,11 @@ export default {
 <style scoped lang="less">
 .topImg {
     width: 100%;
-    height: 200px;
     text-align: center;
     font-size: 0;
     box-shadow: 0 6px 10px rgba(45, 146, 239, 0.15);
     img {
-        width: 100%;
-        height: 100%;
+        max-width: 100%;
         vertical-align: middle;
     }
 }

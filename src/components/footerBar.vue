@@ -42,17 +42,17 @@ export default {
         this.navData.list = [
           {
             text: '首页',
-            url: '/circulateIndex',
-            icon: 'icon-home'
+            url: '/circulateIndex?clear=true',
+            icon: 'icon-caidan06'
           },
           {
             text: '拍照上传',
-            url: '/uploadIndex',
+            url: '/uploadIndex?clear=true',
             icon: 'icon-paizhao'
           },
           {
             text: '个人中心',
-            url: '/myCenterIndex',
+            url: '/myCenterIndex?clear=true',
             icon: 'icon-me'
           }
         ]
@@ -60,8 +60,8 @@ export default {
         this.navData.list = [
           {
             text: '首页',
-            url: '/circulateIndex',
-            icon: 'icon-home'
+            url: '/circulateIndex?clear=true',
+            icon: 'icon-caidan06'
           },
           {
             text: '作品上传',
@@ -70,7 +70,7 @@ export default {
           },
           {
             text: '个人中心',
-            url: '/myCenterIndex',
+            url: '/myCenterIndex?clear=true',
             icon: 'icon-me'
           }
         ]
@@ -131,7 +131,7 @@ export default {
             width: 33%;
             height: 100%;
             text-align: center;
-            color: #C3C3C3;
+            color: #666666;
             &.active{
                 color: #0069FF;
                 .text{

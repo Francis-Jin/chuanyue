@@ -1,8 +1,9 @@
 <template>
     <div class="bindMain">
+        <div class="background_white"></div>
         <div class="content">
             <div class="bindTitle">
-                <span>身份验证</span>
+                <span>教师认证</span>
             </div>
             <div class="formLists">
                 <div class="item">
@@ -209,7 +210,7 @@ export default {
               this.$router.go(-2)
             } else {
               this.$router.push({
-                path: 'circulateIndex'
+                path: 'circulateIndex?clear=true'
               })
               localStorage.setItem('identity', this.userIdentity)
               this.getUrserInfo()
@@ -236,7 +237,7 @@ export default {
               this.$router.go(-2)
             } else {
               this.$router.push({
-                path: 'circulateIndex'
+                path: 'circulateIndex?clear=true'
               })
               localStorage.setItem('identity', this.userIdentity)
               this.getUrserInfo()
@@ -263,7 +264,7 @@ export default {
               this.$router.go(-2)
             } else {
               this.$router.push({
-                path: 'circulateIndex'
+                path: 'circulateIndex?clear=true'
               })
               localStorage.setItem('identity', this.userIdentity)
               this.getUrserInfo()
@@ -405,6 +406,14 @@ export default {
 </style>
 
 <style scoped lang="less">
+    .background_white{
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255,255,255,.5);
+    }
 .bindMain {
     position: fixed;
     left: 0;
@@ -419,6 +428,7 @@ export default {
         position: absolute;
         left: 7%;
         top: 20%;
+        z-index: 2;
         background: #fff;
         .bindTitle {
             width: 80px;

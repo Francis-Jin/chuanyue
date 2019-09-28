@@ -2,9 +2,11 @@
 import axios from 'axios'
 
 const instance = axios.create({
-  baseURL: 'http://cy.zhiyanginfo.top/chuanyue', // 正式环境
+  // baseURL: 'http://cy.zhiyanginfo.top/chuanyue', // 正式环境
   // baseURL: 'http://tellsea.natapp1.cc/chuanyue', // 本地环境
   // baseURL: 'http://houtan.zhiyanginfo.top/chuanyue/', // 测试服环境
+  // baseURL: 'http://hidkee.4kb.cn/chuanyue/', // 测试服环境
+  baseURL: '/api', // 测试服环境
   timeout: 60000, // 请求超时设置
   headers: {'Accept': 'application/json'}
 })

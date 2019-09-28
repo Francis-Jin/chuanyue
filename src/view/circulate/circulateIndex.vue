@@ -163,7 +163,7 @@ export default {
           url: 'abilityTesting'
         },
         {
-          name: '优惠专区',
+          name: '传阅商城',
           icon: require('../../assets/icon/yh.png'),
           url: '/preferentialZone'
         }
@@ -195,7 +195,7 @@ export default {
           url: 'abilityTesting'
         },
         {
-          text: '优惠专区',
+          text: '传阅商城',
           img: require('../../assets/icon/yh.png'),
           url: 'preferentialZone'
         }
@@ -211,11 +211,14 @@ export default {
     }
   },
   created () {
+    if (!this.$route.query.clear) {
+      localStorage.clear()
+    }
     if (localStorage.getItem('oid') === 'undefined' || !localStorage.getItem('oid')) {
       localStorage.setItem('oid', this.$route.query.OID)
     }
     this.getUrserInfoData()
-    document.title = '首页'
+    document.title = '传阅语文学习平台'
   },
   mounted () {
     document.documentElement.scrollTop = 0
@@ -492,13 +495,14 @@ export default {
 
     .main {
         min-height: 100vh;
+        background: #f5f5f5;
     }
 
     /* 导航 */
     .navs {
         width: 100%;
-        padding: 20px 0 0;
-
+        /*padding: 10px 0 0;*/
+        background: #fff;
         &.teacherNavs {
             .item {
                 width: 25%;
@@ -525,7 +529,7 @@ export default {
 
             .navText {
                 font-size: .24rem;
-                color: #999;
+                color: #999999;
             }
         }
 
@@ -538,22 +542,34 @@ export default {
 
     /* 内容 */
     .contentWrap {
-        width: 90%;
-        margin: 0 auto;
-
+        width: 100%;
+        background: #fff;
+        margin-top: 10px;
         .hotNews {
             width: 100%;
 
             .hotNavs {
                 display: flex;
+                /*box-sizing: border-box;*/
+                padding: 0 20px;
 
+                position: relative;
+                &::after{
+                    display: block;
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                    width: 100%;
+                    border-bottom: 1px solid #cdcdcd;
+                    transform: scaleY(.3);
+                }
                 .item {
                     text-align: center;
                     color: #666;
-                    height: 50px;
-                    line-height: 50px;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
                     position: relative;
-
                     span {
                         position: relative;
                         z-index: 2;
@@ -571,13 +587,14 @@ export default {
                         &:after {
                             position: absolute;
                             content: "";
-                            left: 5%;
-                            bottom: 10px;
+                            left: 0;
+                            bottom: 0px;
                             display: block;
-                            width: 90%;
+                            width: 100%;
                             height: 2px;
-                            border-radius: 3px;
+                            /*border-radius: 3px;*/
                             background: #4276DF;
+                            z-index: 2;
                         }
                     }
                 }
@@ -585,11 +602,23 @@ export default {
         }
 
         .contentLists {
+
             .item {
                 display: flex;
-                height: 80px;
-                margin-bottom: 16px;
-
+                height: 100px;
+                box-sizing: border-box;
+                padding: 10px 20px;
+                position: relative;
+                &::after{
+                    display: block;
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                    width: 100%;
+                    border-bottom: 1px solid #cdcdcd;
+                    transform: scaleY(.3);
+                }
                 .imgWrap {
                     width: 25%;
                     font-size: 0;
@@ -610,7 +639,7 @@ export default {
                     .title {
                         width: 100%;
                         margin-top: 6px;
-                        color: #666666;
+                        color: #333333;
                         box-sizing: border-box;
                         padding-left: 10px;
                         font-size: .28rem;
@@ -626,7 +655,7 @@ export default {
                         display: flex;
                         justify-content: space-between;
                         line-height: .5rem;
-                        color: #DDDDDD;
+                        color: #999;
 
                         .r {
                             i {

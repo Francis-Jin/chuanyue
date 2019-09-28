@@ -58,6 +58,9 @@ export default {
     }
   },
   mounted () {
+    if (!this.$route.query.clear) {
+      localStorage.clear()
+    }
     if (localStorage.getItem('oid') === 'undefined' || !localStorage.getItem('oid')) {
       localStorage.setItem('oid', this.$route.query.OID)
     }

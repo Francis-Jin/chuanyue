@@ -124,7 +124,7 @@ export default {
       window.onpopstate = function () {
         if (document.title === '提交订单') {
           that.$router.push({
-            path: '/myCenterIndex'
+            path: '/myCenterIndex?clear=true'
           })
         }
       }

@@ -39,8 +39,9 @@
                     </div>
                     <div class="itemRight overflow1">
                         <van-icon :name="iconList[0]" />
-                        <span>试卷得分：</span>
-                        <span style="color:orangered;font-size: .3rem;">{{info.schoolworkCorrectVo.score}}分</span>
+                        <span>得 分 率：</span>
+                        <!-- <span style="color:orangered;font-size: .3rem;">{{info.schoolworkCorrectVo.score}}分</span>-->
+                        <span>{{info.schoolworkInfoVo.scoreRate * 100}}</span><span>%</span>
                     </div>
                 </div>
             </div>

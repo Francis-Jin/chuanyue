@@ -263,11 +263,17 @@ export default {
         this.$api.getHotArticle(this.$Qs.stringify(parms)).then((res) => {
           if (res.data.code * 1 === 200) {
             if (res.data.data.length > 0) {
-              this.tips = 0
               this.contentLists = this.contentLists.concat(res.data.data)
+              if (res.data.data.length > 9) {
+                this.tips = 0
+              } else {
+                this.tips = 1
+              }
             } else {
               this.tips = 1
             }
+          } else {
+            this.tips = 1
           }
         }).catch((error) => {
           this.$toast.clear()

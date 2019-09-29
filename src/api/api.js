@@ -231,6 +231,11 @@ export const deleteCartGoodsApi = params => {
   return instance.get('/app/shoppingCart/deleteShoppingCart.action?' + params)
 }
 
+// 批量删除购物车商品
+export const deleteCartGoodsSelectedApi = params => {
+  return instance.get('/app/shoppingCart/deleteShoppingCarts.action?' + params)
+}
+
 // 更新购物车商品数量
 export const updateCartGoodsQuantityApi = params => {
   return instance.post('/app/shoppingCart/updateQuantity.action?' + params)

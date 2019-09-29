@@ -53,17 +53,17 @@
                     <!--</ul>-->
                 <!--</div>-->
 
-                <van-cell>
-                    <van-col span="14">购买数量</van-col>
-                    <van-col span="10" class="text_right">
-                        <van-stepper
-                            v-model="quantityValue"
-                            integer
-                            input-width="30px"
-                            button-size="26px"
-                        />
-                    </van-col>
-                </van-cell>
+                <!--<van-cell>-->
+                    <!--<van-col span="14">购买数量</van-col>-->
+                    <!--<van-col span="10" class="text_right">-->
+                        <!--<van-stepper-->
+                            <!--v-model="quantityValue"-->
+                            <!--integer-->
+                            <!--input-width="30px"-->
+                            <!--button-size="26px"-->
+                        <!--/>-->
+                    <!--</van-col>-->
+                <!--</van-cell>-->
                 <van-cell>
                     <div class="margin_bottom_20">
                         <span>简介</span>

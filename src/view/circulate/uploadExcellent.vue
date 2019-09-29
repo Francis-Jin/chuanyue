@@ -45,7 +45,7 @@
         <div class="bottomModel" v-if="(surplusNum != 0 && isCanUploadType) || (isWhatUpload === 3 && isCanUploadType)">
 
             <!--<div class="bTitle">-->
-                <!--<span>温馨提示</span>-->
+            <!--<span>温馨提示</span>-->
             <!--</div>-->
 
             <div class="tipsContent">
@@ -54,17 +54,23 @@
 
             <div class="uploadImgWrap">
                 <div class="td clearfix">
-                    <p v-if="fileList.length > 1" class="font_26 color_999 margin_bottom_20">请在此区域拖动图片进行排序</p>
+                    <p v-if="fileList.length > 1" class="font_26 color_999 margin_bottom_20">可拖动图片进行排序</p>
                     <draggable v-model="fileList">
-                        <div class="uploadImgItem" v-for="element in fileList" :key="element.id">
-                            <img :src="element.content" alt="">
+                        <div class="uploadImgItem" v-for="(element,index) in fileList" :key="index">
+                            <img :src="element.url" alt="" @click="previewImageFn(element.url)">
+                            <div class="deleteImg" @click="deleteImgFn(index,element.sort)">
+                                <i class="iconfont icon-delete"></i>
+                            </div>
                         </div>
                     </draggable>
+                    <div v-if="fileList.length < 6" class="uploadStyle" @click="selectedImgFn">
+                        <span><i class="iconfont icon-add1"></i></span>
+                    </div>
                 </div>
-                <div class="uploadBtn">
-                    <p v-if="fileList.length > 0" class="font_26 color_999 margin_bottom_20">图片上传缩略图，可点击放大查看或删除</p>
-                    <van-uploader :after-read="afterRead" v-model="fileList" multiple :max-count="6"/>
-                </div>
+                <!--<div class="uploadBtn">-->
+                <!--&lt;!&ndash;<p v-if="fileList.length > 0" class="font_26 color_999 margin_bottom_20">图片上传缩略图，可点击放大查看或删除</p>&ndash;&gt;-->
+                <!--&lt;!&ndash;<van-uploader :after-read="afterRead" v-model="fileList" multiple :max-count="6"/>&ndash;&gt;-->
+                <!--</div>-->
             </div>
 
             <div class="submitFile" @click="submitFile">
@@ -121,11 +127,14 @@ import draggable from 'vuedraggable'
                 paperNumber: 0,
                 paperIdentifier: 0,
                 isShowSelectedStu: false,
-                selectedStuItem: null
+                selectedStuItem: null,
+                serverId: [],
+                sortValue: 1,
+                serverIdSort: 0,
+                upLists: []
             }
         },
         mounted () {
-            console.log(JSON.parse(sessionStorage.getItem('selectedStuItem')))
             if (JSON.parse(sessionStorage.getItem('selectedStuItem'))) {
                 this.studentName = JSON.parse(sessionStorage.getItem('selectedStuItem')).name
                 this.selectedStuItem = JSON.parse(sessionStorage.getItem('selectedStuItem'))
@@ -140,6 +149,7 @@ import draggable from 'vuedraggable'
                 }
             } else {
                 this.isCanUploadType = true
+
             }
 
             if (this.isWhatUpload === 1) {
@@ -160,24 +170,77 @@ import draggable from 'vuedraggable'
         },
         methods: {
 
+            /** 去购买页面. */
             goBuy () {
                 this.$router.push({
                     path: '/preferentialZone'
                 })
             },
 
-            /** 同步辅导弹出提示. */
-            alertSyncFn () {
-                this.$dialog.confirm({
-                    title: '同步辅导试卷审核',
-                    message: '扫一扫试卷上方二维码，识别该试卷是否可上传',
-                    cancelButtonText: '返回',
-                    cancelButtonColor: '#999',
-                    confirmButtonText: '知道了',
-                }).then(() => {
-                    localStorage.setItem('isCanUpload', 1)
-                }).catch(() => {
-                    this.$router.go(-1)
+            /** 删除图片. */
+            deleteImgFn (index, sort) {
+                this.serverId.forEach((item, i) => {
+                    if (item.sort === sort) {
+                        this.serverId.splice(i, 1)
+                    }
+                })
+                this.fileList.splice(index, 1)
+            },
+
+            /** 选择图片或拍照. */
+            selectedImgFn () {
+                let that = this
+                wx.chooseImage({
+                    count: 6 - that.fileList.length, // 默认9
+                    sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                    success: function (res) {
+                        const localIds = res.localIds  // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+                        let obj = {}
+                        localIds.forEach(item => {
+                            obj = {
+                                sort: that.sortValue++,
+                                url: item
+                            }
+                            that.fileList.push(obj)
+                        })
+
+                        that.syncUpload(localIds)
+                    }
+                })
+            },
+
+            // 上传图片
+            syncUpload (localIds) {
+                let that = this
+                that.serverIdSort++
+                const localId = localIds.pop()
+                wx.uploadImage({
+                    localId: localId.toString(),
+                    isShowProgressTips: 1,
+                    success: function (res) {
+                        // 返回图片的服务器端ID
+                        that.serverId.push({
+                            sort: that.serverIdSort,
+                            serverId: res.serverId
+                        })
+                        //其他对serverId做处理的代码
+                        if (localIds.length > 0) {
+                            that.syncUpload(localIds)
+                        }
+                    }
+                })
+            },
+
+            /** 图片预览. */
+            previewImageFn (url) {
+                let arr = []
+                this.fileList.forEach(item => {
+                    arr.push(item.url)
+                })
+                wx.previewImage({
+                    current: url, // 当前显示图片的http链接
+                    urls: arr// 需要预览的图片http链接列表
                 })
             },
 
@@ -234,7 +297,12 @@ import draggable from 'vuedraggable'
                             // 必填，签名
                             signature: data.signature,
                             // 必填，需要使用的JS接口列表，所有JS接口列表
-                            jsApiList: ['scanQRCode']
+                            jsApiList: [
+                                'scanQRCode',
+                                'chooseImage',
+                                'previewImage',
+                                'uploadImage'
+                            ]
                         })
                         wx.ready(function () {
 
@@ -320,15 +388,17 @@ import draggable from 'vuedraggable'
                     this.$toast.fail('请上传图片')
                     return false
                 }
-                let parm = new FormData()
 
-                if (imgLists && imgLists.length) { // 判断是否是多图上传 多图则循环添加进去
-                    imgLists.forEach(item => {
-                        parm.append('file', item.file)// 第一个参数字符串可以填任意命名，第二个根据对象属性来找到file
-                    })
-                }
-
-                parm.append('folder', 'app_schoolwork_info')
+                // alert(JSON.stringify(imgLists))
+                // return false;
+                // let parm = new FormData()
+                //
+                // if (imgLists && imgLists.length) { // 判断是否是多图上传 多图则循环添加进去
+                //     imgLists.forEach(item => {
+                //         parm.append('file', item)// 第一个参数字符串可以填任意命名，第二个根据对象属性来找到file
+                //     })
+                // }
+                // parm.append('folder', 'app_schoolwork_info')
 
                 this.$toast.loading({
                     message: '正在提交...',
@@ -336,60 +406,68 @@ import draggable from 'vuedraggable'
                     duration: 0
                 })
 
-                this.$api.uploadFile(parm).then(res => {
-                    let data = res.data
-                    let successLists = data.filter(item => item.code * 1 === 200)
-                    let upLists = []
+                // alert(this.serverId.join())
+                // return false;
+                //
+                // this.$api.uploadFile(parm).then(res => {
+                //     let data = res.data
+                //     let successLists = data.filter(item => item.code * 1 === 200)
 
-                    successLists.forEach((item, index) => {
-                        upLists.push({
-                            photo: item.data,
-                            sort: index + 1
-                        })
-                    })
-
-                    let params
-                    if (this.userIdentity !== 1) {
-                        params = this.$Qs.stringify({
-                            uploadBatchId: 0,
-                            trainingSchoolId: this.trainingSchoolId,
-                            classId: this.classId,
-                            grade: this.grade,
-                            studentId: this.studentId,
-                            correctType: this.$route.query.isWhat,
-                            photoStr: JSON.stringify(upLists),
-                            createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
-                            paperId: this.paperId,
-                            paperNumber: this.paperNumber,
-                            paperIdentifier: this.paperIdentifier
-
-                        })
-                    } else {
-                        params = this.$Qs.stringify({
-                            uploadBatchId: this.$route.query.batchId,
-                            trainingSchoolId: this.$route.query.trainingSchoolId,
-                            classId: this.$route.query.classId,
-                            grade: this.$route.query.gradeId,
-                            studentId: this.$route.query.studentsId,
-                            correctType: this.$route.query.isWhat,
-                            photoStr: JSON.stringify(upLists),
-                            createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
-                            paperId: this.paperId,
-                            paperNumber: this.paperNumber,
-                            paperIdentifier: this.paperIdentifier
-                        })
-                    }
-
-                    this.$api.additionalWorksApi(params).then(res => {
-                        this.$toast.clear()
-                        if (res.data.code * 1 === 200) {
-                            this.isShowSuccessToast = true
-                            setTimeout(() => {
-                                window.history.go(-1)
-                            }, 1000)
+                let upLists = []
+                let i = 6
+                this.fileList.forEach(element => {
+                    this.serverId.forEach(item => {
+                        if (element.sort === item.sort) {
+                            upLists.push({
+                                photo: item.serverId,
+                                sort: i--
+                            })
                         }
                     })
                 })
+
+                let params
+                if (this.userIdentity !== 1) {
+                    params = this.$Qs.stringify({
+                        uploadBatchId: 0,
+                        trainingSchoolId: this.trainingSchoolId,
+                        classId: this.classId,
+                        grade: this.grade,
+                        studentId: this.studentId,
+                        correctType: this.$route.query.isWhat,
+                        photoStr: JSON.stringify(upLists),
+                        createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
+                        paperId: this.paperId,
+                        paperNumber: this.paperNumber,
+                        paperIdentifier: this.paperIdentifier
+
+                    })
+                } else {
+                    params = this.$Qs.stringify({
+                        uploadBatchId: this.$route.query.batchId,
+                        trainingSchoolId: this.$route.query.trainingSchoolId,
+                        classId: this.$route.query.classId,
+                        grade: this.$route.query.gradeId,
+                        studentId: this.$route.query.studentsId,
+                        correctType: this.$route.query.isWhat,
+                        photoStr: JSON.stringify(upLists),
+                        createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
+                        paperId: this.paperId,
+                        paperNumber: this.paperNumber,
+                        paperIdentifier: this.paperIdentifier
+                    })
+                }
+
+                this.$api.additionalWorksApi(params).then(res => {
+                    this.$toast.clear()
+                    if (res.data.code * 1 === 200) {
+                        this.isShowSuccessToast = true
+                        setTimeout(() => {
+                            window.history.go(-1)
+                        }, 1000)
+                    }
+                })
+                // })
             }
         }
     }
@@ -407,6 +485,21 @@ import draggable from 'vuedraggable'
 <style scoped lang="less">
     * {
         touch-action: pan-y;
+    }
+
+    .uploadStyle {
+        display: inline-block;
+        width: 2rem;
+        height: 2rem;
+        float: left;
+        text-align: center;
+        line-height: 2rem;
+        border: 1px dashed #cdcdcd;
+
+        i {
+            font-size: 1rem;
+            color: #cdcdcd;
+        }
     }
 
     .topImg {
@@ -520,6 +613,23 @@ import draggable from 'vuedraggable'
                 float: left;
                 margin-right: .3rem;
                 margin-bottom: .3rem;
+                position: relative;
+
+                .deleteImg {
+                    position: absolute;
+                    right: -5px;
+                    top: -5px;
+                    width: 30px;
+                    height: 30px;
+                    text-align: center;
+                    line-height: 30px;
+                    border-radius: 100%;
+                    background: rgba(0, 0, 0, .8);
+
+                    i {
+                        color: #fff;
+                    }
+                }
 
                 &:nth-child(3n) {
                     margin-right: 0;

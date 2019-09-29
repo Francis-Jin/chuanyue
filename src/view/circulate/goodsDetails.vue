@@ -1,60 +1,67 @@
 <template>
     <div class="goods">
-        <van-swipe class="goods-swipe" :autoplay="3000" style="height: 5rem">
+        <van-swipe class="goods-swipe margin_bottom" :autoplay="3000" style="height: 5rem">
             <van-swipe-item v-for="(thumb,index) in goods.productPhotoList" :key="index">
                 <img style="height: 100%;" :src="thumb.photo" >
             </van-swipe-item>
         </van-swipe>
 
-        <van-cell-group>
-            <van-cell class="goods-express">
-                <div class="goods-title margin_bottom_10">{{ goods.name }}</div>
-                <van-col span="14">
-                    <div class="goods-price">
-                        <span class="price" style="color: #e13d13 "><i class="iconfont icon-moneyrmb"></i>{{ formDataPrice(goods.salePrice) }}</span>
-                        <span class="del"><s> <i class="iconfont icon-moneyrmb"></i> {{formDataPrice(goods.marketPrice)}} </s></span>
-                    </div>
-                </van-col>
-                <van-col span="10" style="text-align: right"><span style="margin-right: .2rem;">类型</span> {{ goods.categoryName }}</van-col>
-            </van-cell>
-            <div class="type">
-                <ul>
-                    <li v-for="(item,index) in goods.productAttrList" :key="index">
-                        <div class="item"><span>{{item.attrName}}</span></div>
-                        <div class="item"><span>{{item.attrValue}}</span></div>
-                    </li>
-                </ul>
-            </div>
-            <van-cell>
-                <van-col span="14">购买数量</van-col>
-                <van-col span="10" class="text_right">
-                    <van-stepper
-                        v-model="quantityValue"
-                        integer
-                        input-width="30px"
-                        button-size="26px"
-                    />
-                </van-col>
-            </van-cell>
-            <van-cell>
-                <div class="margin_bottom_20">
-                    <span>简介</span>
-                </div>
-                <div class="details" v-html="goods.intro"></div>
-            </van-cell>
-        </van-cell-group>
+        <!--<van-cell-group>-->
+            <!--<van-cell class="goods-express">-->
+                <!--<div class="goods-title margin_bottom_10">{{ goods.name }}</div>-->
+                <!--<van-col span="14">-->
+                    <!--<div class="goods-price">-->
+                        <!--<span class="price" style="color: #e13d13 "><i class="iconfont icon-moneyrmb"></i>{{ formDataPrice(goods.salePrice) }}</span>-->
+                        <!--<span class="del"><s> <i class="iconfont icon-moneyrmb"></i> {{formDataPrice(goods.marketPrice)}} </s></span>-->
+                    <!--</div>-->
+                <!--</van-col>-->
+                <!--<van-col span="10" style="text-align: right"><span style="margin-right: .2rem;">类型</span> {{ goods.categoryName }}</van-col>-->
+            <!--</van-cell>-->
+        <!--</van-cell-group>-->
 
-        <van-goods-action style="padding-left: .5rem">
-            <van-goods-action-icon style="margin-right:.4rem" :info="allQuantity==0?'':allQuantity" icon="cart-o" @click="onClickCart">
-                购物车
-            </van-goods-action-icon>
-            <van-goods-action-button type="primary" @click="addCart">
-                加入购物车
-            </van-goods-action-button>
-            <van-goods-action-button type="info" @click="goBuyFn">
-                立即购买
-            </van-goods-action-button>
-        </van-goods-action>
+        <div class="bg_fff padding_bottom margin_bottom padding_left_right_20">
+            <div class="item_goods">
+                <div class="title">{{ goods.name }}</div>
+            </div>
+            <div class="item_goods">
+                <div class="price color_theme">平台价</div>
+                <div class="price color_theme"><i class="iconfont icon-moneyrmb"></i>{{goods.salePrice}}</div>
+            </div>
+            <div class="item_goods">
+                <div class="price">原价</div>
+                <div class="price color_999"><s><i class="iconfont icon-moneyrmb"></i>{{goods.salePrice}}</s></div>
+            </div>
+
+        </div>
+
+        <div class="bg_fff margin_bottom">
+            <div class="item_goods" v-for="(item,index) in goods.productAttrList" :key="index">
+                <div class="init">{{item.attrName}}</div>
+                <div class="init">{{item.attrValue}}</div>
+            </div>
+        </div>
+
+        <div class="bg_fff padding_bottom">
+            <div class="goods_details padding_left_right_20 margin_bottom"><span>简介</span></div>
+            <div class="details padding_bottom padding_left_right_20" v-html="goods.intro"></div>
+        </div>
+
+        <div class="footer">
+
+            <van-goods-action style="padding-left: .5rem">
+                <van-goods-action-icon style="margin-right:.4rem" :info="allQuantity==0?'':allQuantity" icon="cart-o" @click="onClickCart">
+                    购物车
+                </van-goods-action-icon>
+                <van-goods-action-button type="primary" @click="addCart">
+                    加入购物车
+                </van-goods-action-button>
+                <van-goods-action-button type="info" @click="goBuyFn">
+                    立即购买
+                </van-goods-action-button>
+            </van-goods-action>
+
+        </div>
+        <div style="height: 60px;"></div>
     </div>
 </template>
 
@@ -161,83 +168,73 @@ export default {
 </script>
 
 <style lang="less">
-    .type{
-        width: 90%;
-        margin: 0 auto;
-        padding: .1rem 0;
-        &:after{
-            content: '';
-            display: block;
-            clear: both;
+    .goods{
+        width: 100%;
+        min-height: 80vh;
+        background: #f5f5f5;
+    }
+    .color_999{
+        color: #999;
+    }
+    .color_theme{
+        color: #409eff;
+    }
+    .padding_bottom{
+        padding-bottom: 10px;
+    }
+    .margin_bottom{
+        margin-bottom: 10px;
+    }
+    .padding_left_right_20{
+        box-sizing: border-box;
+        padding: 0 20px;
+    }
+    .bg_fff{
+        background: #fff;
+    }
+    .item_goods{
+        display: flex;
+        line-height: 40px;
+        .init:first-child{
+            width: 30%;
+            color:#999;
+            text-align: right;
+            margin-right: 10px;
         }
-        li{
-            width: 50%;
-            float: left;
-            display: flex;
-            height: .8rem;
-            line-height: .8rem;
-            border-bottom: 1px solid #ededed;
-            &:nth-child(2n-1){
-                border-right: 1px solid #ededed;
-            }
-            &:last-child{
-                border:none;
-            }
-            div.item{
-                &:nth-child(1){
-                    width: 40%;
-                    color: #333;
-                }
-                &:nth-child(2){
-                    width: 59%;
-                    color: #999;
-                }
-            }
+        .init:last-child{
+            width: 40%;
+            color: #333;
+        }
+        .price{
+            margin-right: 10px;
+        }
+        .title{
+            font-size: .4rem;
+            color: #333;
+            font-weight: 600;
         }
     }
+    .goods_details{
+        height: 50px;
+        width: 100%;
+        line-height: 50px;
+        position: relative;
+        &::after{
+            content: " ";
+            display: block;
+            position: absolute;
+            width: 100%;
+            left:0;
+            bottom: 0;
+            border-top:1px solid #cdcdcd;
+            transform: scaleY(.3);
+        }
+    }
+
     .details{
         img{
             max-width: 100%;
         }
     }
-    .goods {
-        padding-bottom: 50px;
-        &-swipe {
-            img {
-                width: 100%;
-                display: block;
-            }
-        }
-        &-title {
-            font-size: 16px;
-        }
-        &-price {
-            .price{
-                color: #f44;
-                font-size: .4rem;
-                margin-right: .2rem;
-            }
-            .del{
-                font-size: .4rem;
-                color:#999;
-            }
-            i{
-                font-size: .3rem;
-            }
-        }
-        &-express {
-            color: #999;
-            font-size: 12px;
-            padding: 5px 15px;
-        }
-        &-cell-group {
-            margin: 15px 0;
-            .van-cell__value {
-                color: #999;
-            }
-        }
-        &-tag {
-            margin-left: 5px;
-        }
-    }
+
 </style>

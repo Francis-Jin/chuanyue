@@ -33,9 +33,12 @@
         </div>
 
         <!--添加学员按钮-->
-        <div class="addStudents" @click="toPageFnAdd('/addChildren?bind=false&listsAdd=true')">
-            <span>+</span>
-        </div>
+        <!--<div class="addStudents" @click="toPageFnAdd('/addChildren?bind=false&listsAdd=true')">-->
+            <!--<span>添加学员</span>-->
+        <!--</div>-->
+
+        <!--添加上传-->
+        <MoveBtn @onFloatBtnClicked="toPageFnAdd('/addChildren?bind=false&listsAdd=true')"></MoveBtn>
 
         <!--上传页面过来选择学员-->
         <div v-if="uploadSelectedStu && lists.length > 0" class="selectedStu" @click="goBackUploadFn">
@@ -46,7 +49,11 @@
 </template>
 
 <script>
+import MoveBtn from '../../components/moveBtn'
 export default {
+  components: {
+    MoveBtn
+  },
   data () {
     return {
       identity: localStorage.getItem('identity') * 1,
@@ -146,21 +153,17 @@ export default {
 <style scoped lang="less">
     .main{
         position: relative;
-        min-height: 80vh;
+        /*min-height: 80vh;*/
     }
     .addStudents{
-        position: fixed;
-        right: 10px;
-        bottom:100px;
-        width: 60px;
-        height: 60px;
+        width: 100%;
+        height: 50px;
         text-align: center;
-        line-height: 60px;
+        line-height: 50px;
         background: #fff;
         color: #409eff;
         font-weight: 600;
-        font-size: 30px;
-        border-radius: 50%;
+        font-size: 14px;
         box-shadow: 0 0 10px 2px #f5f5f5;
     }
     .selectedStu{

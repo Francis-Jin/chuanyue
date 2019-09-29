@@ -12,10 +12,12 @@
         <!--</div>-->
 
         <div class="content">
-
-            <div class="content_lists" v-for="(pros,index) in goodsLists" :key="index"
-                 @click="toDetails(pros.productId)">
-                <div class="shop_img">
+            <div class="content_top_text">
+                <i class="iconfont icon-fuwenben"></i>
+                <span>购物清单</span>
+            </div>
+            <div class="content_lists" v-for="(pros,index) in goodsLists" :key="index">
+                <div class="shop_img" @click="toDetails(pros.productId)">
                     <img :src="pros.cover" alt="">
                 </div>
                 <div class="shop_content">
@@ -24,6 +26,15 @@
                     <p class="price"><i class="iconfont icon-moneyrmb">:</i>{{pros.salePrice}}</p>
                     <div class="num">
                         <span>x{{pros.quantity}}</span>
+                    </div>
+                    <div class="updateQuantity">
+                        <van-stepper
+                            v-model="pros.quantity"
+                            integer
+                            input-width="40px"
+                            button-size="26px"
+                            @change="stepperChangeFn(pros, $event)"
+                        />
                     </div>
                 </div>
             </div>
@@ -42,12 +53,20 @@
             </div>
         </div>
 
-        <van-submit-bar
-            button-type="info"
-            :price="allPrideFn"
-            :button-text="submitBarText"
-            @submit="onSubmit">
-        </van-submit-bar>
+        <div class="footer_btn">
+            <van-submit-bar
+                button-type="info"
+                :price="allPrice"
+                :button-text="submitBarText"
+                @submit="onSubmit"
+            >
+            </van-submit-bar>
+            <div class="buy_num">
+                <span>共</span>
+                <span>{{this.allCount}}</span>
+                <span>件商品</span>
+            </div>
+        </div>
         <div style="height: 60px"></div>
     </div>
 </template>
@@ -57,7 +76,7 @@ export default {
   data () {
     return {
       userIdentity: localStorage.getItem('identity') * 1,
-      allPrice: sessionStorage.getItem('allPrice'),
+      allPrice: sessionStorage.getItem('allPrice') * 1,
       allCount: sessionStorage.getItem('allCount'),
       message: '',
       goodsLists: JSON.parse(sessionStorage.getItem('submitOrderLists'))
@@ -66,10 +85,7 @@ export default {
 
   computed: {
     submitBarText () {
-      return '提交订单' + (this.allCount ? '(' + this.allCount + ')' : '')
-    },
-    allPrideFn () {
-      return sessionStorage.getItem('allPrice') * 1
+      return '提交订单'
     }
   },
 
@@ -78,6 +94,28 @@ export default {
   },
 
   methods: {
+
+    /** 数量改变时. */
+    stepperChangeFn (item, e) {
+      let parms = this.$Qs.stringify({
+        productId: item.productId,
+        quantity: e
+      })
+      this.$api.updateCartGoodsQuantityApi(parms).then(res => {
+        if (res.data.code * 1 === 200) {
+          this.totalPeice()
+        }
+      })
+    },
+
+    /** 计算总价. */
+    totalPeice () {
+      // 每次调用此方法，将初始值为0，遍历价格并累加
+      this.allPrice = 0
+      this.goodsLists.forEach(item => {
+        this.allPrice += item.salePrice * item.quantity * 100
+      })
+    },
 
     /** JSSDK. */
     importWeixinJSSDK () {
@@ -179,8 +217,55 @@ export default {
         }
     }
 </script>
-<style scoped lang="less">
 
+<style type="text/css">
+    .footer_btn .van-submit-bar__text{
+        position: relative;
+        top: -10px;
+    }
+    .footer_btn{
+        position: fixed;
+        left: 0;
+        bottom: 0;
+    }
+
+    .buy_num{
+        position: fixed;
+        right: 34%;
+        bottom:4px;
+        width: 30%;
+        height: 20px;
+        text-align: right;
+        line-height: 20px;
+        font-size: .24rem;
+        color: #999;
+        z-index: 100;
+    }
+</style>
+<style scoped lang="less">
+    .content_top_text{
+        height: 50px;
+        line-height: 50px;
+        color: #999;
+        position: relative;
+        &::after{
+            content: "";
+            display: block;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            border-top: 1px solid #cdcdcd;
+            transform: scaleY(.3);
+        }
+        i{
+            font-size: 16px;
+            position: relative;
+            top: 2px;
+            margin-right: 10px;
+            color: #999;
+        }
+    }
     .myAddress {
         position: relative;
         width: 94%;
@@ -288,9 +373,16 @@ export default {
                 .num {
                     position: absolute;
                     right: 6px;
-                    top: .8rem;
+                    top: .5rem;
                     color: #e13d13;
                     background: #fff;
+                }
+                .updateQuantity {
+                    position: absolute;
+                    right: 6px;
+                    bottom: 4px;
+                    min-width: 30px;
+                    height: 26px;
                 }
             }
         }

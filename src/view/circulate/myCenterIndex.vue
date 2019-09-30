@@ -130,6 +130,7 @@
                     <div class="item padding_top_bottom_10px">
                         <van-cell-group :border="false">
                             <van-cell
+                                v-if="kfTel"
                                 title="客服电话"
                                 :icon="require('../../assets/icon/my_kf.png')">
                                 <a :href="'tel:' + kfTel" style="color: #666;padding-top: .4rem;box-sizing: border-box">{{kfTel}}</a>
@@ -211,7 +212,6 @@
                     success: function (res) {
                         const localIds = res.localIds  // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
                         that.selectedImgHeader = localIds
-                        alert(that.selectedImgHeader)
                         that.syncUpload(localIds)
                     }
                 });

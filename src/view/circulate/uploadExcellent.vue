@@ -89,6 +89,17 @@
                 </div>
             </div>
         </div>
+
+        <!--选择照片或拍照上拉弹框-->
+        <!--<div>-->
+            <!--<van-action-sheet-->
+                <!--v-model="isShowSelectedImgBtn"-->
+                <!--:actions="actions"-->
+                <!--cancel-text="取消"-->
+                <!--@select="isShowSelectedImgBtn = false"-->
+                <!--@cancel="onCancel"-->
+            <!--/>-->
+        <!--</div>-->
         <div style="height: 60px"></div>
     </div>
 </template>
@@ -187,13 +198,13 @@ import draggable from 'vuedraggable'
                 this.fileList.splice(index, 1)
             },
 
-            /** 选择图片或拍照. */
+            /** 选择图片. */
             selectedImgFn () {
                 let that = this
                 wx.chooseImage({
                     count: 6 - that.fileList.length, // 默认9
                     sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-                    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                    sourceType: ['album','camera'], // 可以指定来源是相册还是相机，默认二者都有
                     success: function (res) {
                         const localIds = res.localIds  // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
                         let obj = {}
@@ -210,11 +221,14 @@ import draggable from 'vuedraggable'
                 })
             },
 
-            // 上传图片
+            /** shift 删除数组并返回数组第一个元素. */
+            /** pop 删除数组并返回数组第一个元素. */
+
+            /** 上传图片. */
             syncUpload (localIds) {
                 let that = this
                 that.serverIdSort++
-                const localId = localIds.pop()
+                const localId = localIds.shift()
                 wx.uploadImage({
                     localId: localId.toString(),
                     isShowProgressTips: 1,
@@ -226,7 +240,9 @@ import draggable from 'vuedraggable'
                         })
                         //其他对serverId做处理的代码
                         if (localIds.length > 0) {
-                            that.syncUpload(localIds)
+                            setTimeout(function () {
+                                that.syncUpload(localIds)
+                            },100)
                         }
                     }
                 })
@@ -414,13 +430,13 @@ import draggable from 'vuedraggable'
                 //     let successLists = data.filter(item => item.code * 1 === 200)
 
                 let upLists = []
-                let i = 6
+                let i = 0
                 this.fileList.forEach(element => {
                     this.serverId.forEach(item => {
                         if (element.sort === item.sort) {
                             upLists.push({
                                 photo: item.serverId,
-                                sort: i--
+                                sort: i++
                             })
                         }
                     })

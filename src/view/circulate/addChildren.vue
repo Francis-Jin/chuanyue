@@ -113,21 +113,12 @@
                         <div class="label">
                             <span>年级</span>
                         </div>
-                        <div class="inputContent">
-                            <template>
-                                <el-select
-                                    v-model="selectedValue"
-                                    placeholder="所在年级"
-                                    @blur="inputBlurFn">
-                                    <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                    >
-                                    </el-option>
-                                </el-select>
-                            </template>
+                        <div class="inputContent" style="text-indent: .32rem;position: relative; " @click="showDatePicker=true">
+                            <span style="color: #cdcdcd;" v-if="grageName == '选择年级'">选择年级</span>
+                            <span v-else>{{ grageName }}</span>
+                            <div style="position: absolute;right: .28rem;top:0;width:20px;height:100%;text-indent: 0;">
+                                <i class="iconfont icon-down" style="font-size: .5rem;font-weight: 300; color: #cdcdcd"></i>
+                            </div>
                         </div>
                     </div>
                     <div v-if="bind == 'true_not'" class="item">
@@ -153,6 +144,20 @@
                 </div>
             </div>
         </div>
+
+        <div>
+
+        </div>
+        <van-popup v-model="showDatePicker" position="bottom">
+            <van-picker
+                show-toolbar
+                title="选择年级"
+                :columns="columns"
+                @cancel="showDatePicker=false"
+                @confirm="onConfirm"
+            />
+        </van-popup>
+
     </div>
 </template>
 
@@ -177,6 +182,8 @@
                     value: 2,
                     label: '女'
                 }],
+                showDatePicker: false,
+                columns:[],
                 sexValue: 1,
                 selectedValue: '', // 选择机构时的id
                 code: '', // 输入验证码
@@ -184,6 +191,7 @@
                 name: '', // 输入学生姓名
                 sex: '',
                 grade: '',
+                grageName: '选择年级', //选择的年级名称
                 studentId: '' // 孩子的机构学号
             }
         },
@@ -197,6 +205,13 @@
             /** 单选改变时. */
             selectedStuTypeFn (e) {
                 e === '1' ? this.bind = 'false' : this.bind = 'true'
+            },
+
+            /** 确认选择年级. */
+            onConfirm(e){
+                this.selectedValue = e.id
+                this.grageName = e.text
+                this.showDatePicker = false
             },
 
             /** 点击获取验证码时. */
@@ -287,12 +302,12 @@
                         let lists = []
                         for (let i = 0; i < res.data.data.length; i++) {
                             let obj = {
-                                value: res.data.data[i].code,
-                                label: res.data.data[i].name
+                                id: res.data.data[i].code,
+                                text: res.data.data[i].name
                             }
                             lists.push(obj)
                         }
-                        this.options = lists
+                        this.columns = lists
                     }
                 })
             },

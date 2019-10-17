@@ -66,7 +66,7 @@
                         <div class="allPContent" v-html="info.schoolworkCorrectVo.remark"></div>
                     </div>
 
-                    <div class="item">
+                    <div style="display: none;" class="item">
                         <div class="answer" v-for="(item,index) in info.questionInfoList" :key="index">
                             <h4>{{item.title}}</h4>
                             <div>

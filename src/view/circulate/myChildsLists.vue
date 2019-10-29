@@ -82,6 +82,8 @@ export default {
           console.log(arr)
           this.lists = arr
           this.isShowNotData = true
+        } else {
+          alert('查询学生列表出错')
         }
       })
     },

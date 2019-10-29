@@ -319,10 +319,12 @@
             /** 点击添加. */
             confirmUserFn () {
                 if (this.bind === 'true') {
+                    // alert("添加机构学生用户id为：" + JSON.parse(sessionStorage.getItem('userInfo')).id)
                     if (!this.isNullFn(this.phone, '手机号不能为空')) return false
                     if (!this.isNullFn(this.name, '请输入学员姓名')) return false
                     if (!this.isNullFn(this.studentId, '请输入您孩子的机构学号')) return false
                     // if (!this.isNullFn(this.code, '验证码不能为空')) return false
+
                     let parms = this.$Qs.stringify({
                         name: this.name,
                         schoolStudentNumber: this.studentId,
@@ -339,6 +341,8 @@
                         }
                     })
                 } else {
+                    // alert("添加非机构学生用户id为：" + JSON.parse(sessionStorage.getItem('userInfo')).id)
+
                     if (!this.isNullFn(this.name, '请输入学员姓名')) return false
                     if (!this.isNullFn(this.selectedValue, '请选择年级')) return false
                     let parms = this.$Qs.stringify({

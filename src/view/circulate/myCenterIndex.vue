@@ -390,6 +390,8 @@
                         this.userInfoPhotoUrl = userInfo.photoUrl
 
                         sessionStorage.setItem('userInfo', JSON.stringify(userInfo))
+                    }else{
+                        alert("获取失败,请稍后再试")
                     }
                 })
             },

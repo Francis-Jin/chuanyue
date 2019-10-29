@@ -6,14 +6,23 @@
         </div>
 
         <div v-if="isWhatUpload === 3" class="topModel">
-            <div class="example" style="font-size: 12px;">
-                <span>第一步：选择学员</span>
+
+            <div class="example">
+                <span>请先选择学员，再扫描同步辅导试卷右上方的二维码。</span>
             </div>
-            <div class="example" style="font-size: 12px;">
-                <span>第二步：选择上传方式，试卷上有二维码的通过“扫一扫”上传，试卷上没有二维码的通过购买次数上传。</span>
+        </div>
+
+        <div v-if="isWhatUpload != 3" class="topModel">
+            <div class="example">
+                <span>您的
+                    <span v-if="isWhatUpload === 1" style="color: #4276DF">作文批改 </span>
+                    <span v-if="isWhatUpload === 2" style="color: #4276DF">作文精批 </span>剩余次数为
+                </span>
+                <span class="num"><span style="color: #4276DF">{{surplusNum}}</span></span>
+                <span v-if="userIdentity != 1 && surplusNum === 0 && isShowBuy">，请先购买</span>。
             </div>
-            <div class="example" style="font-size: 12px;">
-                <span>第三步：点击立即提交按钮</span>
+            <div v-if="userIdentity != 1 && surplusNum === 0 && isShowBuy" class="goBuy">
+                <span @click="goBuy">去购买</span>
             </div>
         </div>
 
@@ -29,37 +38,11 @@
             </div>
         </div>
 
-        <div v-if="isWhatUpload === 3" @click="clickShowUploadTypePickerFn" class="topModel selectedStudent" style="display: flex;justify-content: space-between;">
-            <div class="example" style="padding: 10px 10px;">
-                <span>{{tpUploadTextValue}}</span>
-            </div>
-            <div class="icon">
-                <van-icon name="arrow" size=".28rem" color="#999"/>
-            </div>
-        </div>
-
-        <!-- v-if="isWhatUpload != 3" -->
-        <div v-if="isWhatUpload != 3 || ( isWhatUpload ==3 && tbUploadType == 1 )" class="topModel selectedStudent" style="padding: 20px;">
-            <div class="example" style="padding-top:10px;">
-                <span>您的
-                    <span v-if="isWhatUpload === 1" style="color: #4276DF">作文批改 </span>
-                    <span v-if="isWhatUpload === 2" style="color: #4276DF">作文精批 </span>
-                    <span v-if="isWhatUpload === 3" style="color: #4276DF">同步辅导 </span>剩余次数为
-                </span>
-                <span class="num"><span style="color: #4276DF">{{surplusNum}}</span></span>
-                <span v-if="userIdentity != 1 && surplusNum === 0 && isShowBuy">，请先购买</span>。
-            </div>
-            <div v-if="userIdentity != 1 && surplusNum === 0 && isShowBuy" class="goBuy">
-                <span @click="goBuy">去购买</span>
-            </div>
-        </div>
-
-        <div v-if="isWhatUpload === 3 && !isCanUploadType && tbUploadType == 2" class="scanWrap" @click="scanQRCodeFn">
+        <div v-if="isWhatUpload === 3 && !isCanUploadType" class="scanWrap" @click="scanQRCodeFn">
             <span>扫一扫</span>
         </div>
 
-        <div class="bottomModel" v-if="(surplusNum != 0 && isCanUploadType) || (isWhatUpload === 3 && isCanUploadType) || (isWhatUpload == 3 && tbUploadType == 1 && surplusNum != 0)">
-        <!--<div class="bottomModel">-->
+        <div class="bottomModel" v-if="(surplusNum != 0 && isCanUploadType) || (isWhatUpload === 3 && isCanUploadType)">
 
             <!--<div class="bTitle">-->
             <!--<span>温馨提示</span>-->
@@ -70,36 +53,24 @@
             </div>
 
             <div class="uploadImgWrap">
-                <!--微信jsdk版上传-->
-
-                <!--<div class="td clearfix">-->
-                <!--<p v-if="fileList.length > 1" class="font_26 color_999 margin_bottom_20">可拖动图片进行排序</p>-->
-                <!--<draggable v-model="fileList">-->
-                <!--<div class="uploadImgItem" v-for="(element,index) in fileList" :key="index">-->
-                <!--<img :src="element.url" alt="" @click="previewImageFn(element.url)">-->
-                <!--<div class="deleteImg" @click="deleteImgFn(index,element.sort)">-->
-                <!--<i class="iconfont icon-delete"></i>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</draggable>-->
-                <!--<div v-if="fileList.length < 6" class="uploadStyle" @click="selectedImgFn">-->
-                <!--<span><i class="iconfont icon-add1"></i></span>-->
-                <!--</div>-->
-                <!--</div>-->
-
-                <!--原生H5上传-->
                 <div class="td clearfix">
                     <p v-if="fileList.length > 1" class="font_26 color_999 margin_bottom_20">可拖动图片进行排序</p>
                     <draggable v-model="fileList">
                         <div class="uploadImgItem" v-for="(element,index) in fileList" :key="index">
-                            <img :src="element.content">
+                            <img :src="element.url" alt="" @click="previewImageFn(element.url)">
+                            <div class="deleteImg" @click="deleteImgFn(index,element.sort)">
+                                <i class="iconfont icon-delete"></i>
+                            </div>
                         </div>
                     </draggable>
+                    <div v-if="fileList.length < 6" class="uploadStyle" @click="selectedImgFn">
+                        <span><i class="iconfont icon-add1"></i></span>
+                    </div>
                 </div>
-                <div class="uploadBtn">
-                    <p v-if="fileList.length > 0" class="font_14 color_999 margin_bottom_20">图片上传缩略图，可点击放大查看或删除</p>
-                    <van-uploader :after-read="afterRead" v-model="fileList" multiple :max-count="6"/>
-                </div>
+                <!--<div class="uploadBtn">-->
+                <!--&lt;!&ndash;<p v-if="fileList.length > 0" class="font_26 color_999 margin_bottom_20">图片上传缩略图，可点击放大查看或删除</p>&ndash;&gt;-->
+                <!--&lt;!&ndash;<van-uploader :after-read="afterRead" v-model="fileList" multiple :max-count="6"/>&ndash;&gt;-->
+                <!--</div>-->
             </div>
 
             <div class="submitFile" @click="submitFile">
@@ -121,26 +92,15 @@
 
         <!--选择照片或拍照上拉弹框-->
         <!--<div>-->
-        <!--<van-action-sheet-->
-        <!--v-model="isShowSelectedImgBtn"-->
-        <!--:actions="actions"-->
-        <!--cancel-text="取消"-->
-        <!--@select="isShowSelectedImgBtn = false"-->
-        <!--@cancel="onCancel"-->
-        <!--/>-->
+            <!--<van-action-sheet-->
+                <!--v-model="isShowSelectedImgBtn"-->
+                <!--:actions="actions"-->
+                <!--cancel-text="取消"-->
+                <!--@select="isShowSelectedImgBtn = false"-->
+                <!--@cancel="onCancel"-->
+            <!--/>-->
         <!--</div>-->
         <div style="height: 60px"></div>
-
-        <!--上传方式选择-->
-        <van-popup v-model="showUploadTypePicker" position="bottom">
-            <van-picker
-                show-toolbar
-                title="选择上传方式"
-                :columns="uploadColumns"
-                @cancel="showUploadTypePicker=false"
-                @confirm="onConfirmUploadType"
-            />
-        </van-popup>
     </div>
 </template>
 
@@ -150,8 +110,7 @@ import Banner from '../../components/banner'
 import draggable from 'vuedraggable'
 // import wx from 'weixin-js-sdk'
 /* eslint-disable */
-    import {Dialog} from 'vant'
-
+import { Dialog } from 'vant';
     export default {
         components: {
             Banner,
@@ -162,17 +121,6 @@ import draggable from 'vuedraggable'
                 value: '',
                 showPicker: false,
                 columns: [],
-                tpUploadTextValue: '请选择上传方式',
-                uploadColumns: [
-                    {
-                        id: 1,
-                        text: '使用剩余次数'
-                    },
-                    {
-                        id: 2,
-                        text: '使用试卷二维码'
-                    }
-                ],
                 studentName: '',
                 isShowAddBtn: false,
                 pageUrl: '',
@@ -180,8 +128,6 @@ import draggable from 'vuedraggable'
                 userIdentity: localStorage.getItem('identity') * 1,
                 isShowSuccessToast: false,
                 fileList: [],
-                showUploadTypePicker: false,
-                tbUploadType: 0, //同步辅导上传方式，1用次数上传，2扫描二维码上传。
                 scanResult: '', //扫描二维码结果
                 isCanUploadType: false, //是否显示上传提交
                 isShowBuy: false, //是否立即购买
@@ -209,12 +155,12 @@ import draggable from 'vuedraggable'
                 this.grade = this.selectedStuItem.grade
             }
             if (this.isWhatUpload === 3) {
-                // if (!localStorage.getItem('isCanUpload')) {
-                //     // this.alertSyncFn()
-                // }
+                if (!localStorage.getItem('isCanUpload')) {
+                    // this.alertSyncFn()
+                }
             } else {
                 this.isCanUploadType = true
-                this.tbUploadType = 1
+
             }
 
             if (this.isWhatUpload === 1) {
@@ -242,19 +188,6 @@ import draggable from 'vuedraggable'
                 })
             },
 
-            /** 点击显示上传方式选择弹窗. */
-            clickShowUploadTypePickerFn(){
-                this.showUploadTypePicker = true
-            },
-
-            /** 确认选择的上传方式. */
-            onConfirmUploadType(e){
-                let type = e.id
-                this.tbUploadType = type
-                this.tpUploadTextValue = e.text
-                this.showUploadTypePicker = false
-            },
-
             /** 删除图片. */
             deleteImgFn (index, sort) {
                 this.serverId.forEach((item, i) => {
@@ -271,7 +204,7 @@ import draggable from 'vuedraggable'
                 wx.chooseImage({
                     count: 6 - that.fileList.length, // 默认9
                     sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-                    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                    sourceType: ['album','camera'], // 可以指定来源是相册还是相机，默认二者都有
                     success: function (res) {
                         const localIds = res.localIds  // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
                         let obj = {}
@@ -309,7 +242,7 @@ import draggable from 'vuedraggable'
                         if (localIds.length > 0) {
                             setTimeout(function () {
                                 that.syncUpload(localIds)
-                            }, 100)
+                            },100)
                         }
                     }
                 })
@@ -467,118 +400,171 @@ import draggable from 'vuedraggable'
                 }
 
                 let imgLists = this.fileList
-
                 if (imgLists.length === 0) {
                     this.$toast.fail('请上传图片')
                     return false
                 }
 
-                let parm = new FormData()
-                if (imgLists && imgLists.length) { // 判断是否是多图上传 多图则循环添加进去
-                    imgLists.forEach(item => {
-                        parm.append('file', item.file)// 第一个参数字符串可以填任意命名，第二个根据对象属性来找到file
-                    })
-                }
-                parm.append('folder', 'app_schoolwork_info')
-
-                if (this.isWhatUpload === 3) {
+                if(this.isWhatUpload === 3){
                     Dialog.confirm({
-                        title: '提示',
-                        message: '点击提交前请核对本次上传照片数量与真实试卷页数是否一致。',
-                        showCancelButton: true
-                    }).then(function () {
-                        that.$toast.loading({
-                            message: '正在提交...',
-                            mask: true,
-                            duration: 0
-                        })
-                        that.$api.uploadFile(parm).then(res => {
-                            let data = res.data
-                            let successLists = data.filter(item => item.code * 1 === 200)
+                        title: "提示",
+                        message: "点击提交前请核对本次上传照片数量与真实试卷页数是否一致。",
+                        showCancelButton:true
+                    }).then( function(e){
+                            console.log(e)
+                            that.$toast.loading({
+                                message: '正在提交...',
+                                mask: true,
+                                duration: 0
+                            })
                             let upLists = []
-                            successLists.forEach((item,index) => {
-                                upLists.push({
-                                    photo: item.data,
-                                    sort: index + 1
+                            let i = 0
+                            that.fileList.forEach(element => {
+                                that.serverId.forEach(item => {
+                                    if (element.sort === item.sort) {
+                                        upLists.push({
+                                            photo: item.serverId,
+                                            sort: i++
+                                        })
+                                    }
                                 })
                             })
-                            that.successUploadFn(upLists)
+
+                            let params
+                            if (that.userIdentity !== 1) {
+                                params = that.$Qs.stringify({
+                                    uploadBatchId: 0,
+                                    trainingSchoolId: that.trainingSchoolId,
+                                    classId: that.classId,
+                                    grade: that.grade,
+                                    studentId: that.studentId,
+                                    correctType: that.$route.query.isWhat,
+                                    photoStr: JSON.stringify(upLists),
+                                    createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
+                                    paperId: that.paperId,
+                                    paperNumber: that.paperNumber,
+                                    paperIdentifier: that.paperIdentifier
+
+                                })
+                            } else {
+                                params = that.$Qs.stringify({
+                                    uploadBatchId: that.$route.query.batchId,
+                                    trainingSchoolId: that.$route.query.trainingSchoolId,
+                                    classId: that.$route.query.classId,
+                                    grade: that.$route.query.gradeId,
+                                    studentId: that.$route.query.studentsId,
+                                    correctType: that.$route.query.isWhat,
+                                    photoStr: JSON.stringify(upLists),
+                                    createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
+                                    paperId: that.paperId,
+                                    paperNumber: that.paperNumber,
+                                    paperIdentifier: that.paperIdentifier
+                                })
+                            }
+
+                            that.$api.additionalWorksApi(params).then(res => {
+                                that.$toast.clear()
+                                if (res.data.code * 1 === 200) {
+                                    that.isShowSuccessToast = true
+                                    setTimeout(() => {
+                                        window.history.go(-1)
+                                    }, 1000)
+                                }
+                            })
                         })
-                    })
-                } else {
+
+                }else {
                     that.$toast.loading({
                         message: '正在提交...',
                         mask: true,
                         duration: 0
                     })
-                    that.$api.uploadFile(parm).then(res => {
-                        let data = res.data
-                        let successLists = data.filter(item => item.code * 1 === 200)
-                        let upLists = []
-                        successLists.forEach((item,index) => {
-                            upLists.push({
-                                photo: item.data,
-                                sort: index + 1
-                            })
+                    let upLists = []
+                    let i = 0
+                    that.fileList.forEach(element => {
+                        that.serverId.forEach(item => {
+                            if (element.sort === item.sort) {
+                                upLists.push({
+                                    photo: item.serverId,
+                                    sort: i++
+                                })
+                            }
                         })
-                        that.successUploadFn(upLists)
                     })
-                }
 
-            },
+                    let params
+                    if (that.userIdentity !== 1) {
+                        params = that.$Qs.stringify({
+                            uploadBatchId: 0,
+                            trainingSchoolId: that.trainingSchoolId,
+                            classId: that.classId,
+                            grade: that.grade,
+                            studentId: that.studentId,
+                            correctType: that.$route.query.isWhat,
+                            photoStr: JSON.stringify(upLists),
+                            createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
+                            paperId: that.paperId,
+                            paperNumber: that.paperNumber,
+                            paperIdentifier: that.paperIdentifier
 
-            /** 提交上传函数. */
-            successUploadFn(upLists){
-                let that = this
-                let params
-                if (that.userIdentity !== 1) {
-                    params = that.$Qs.stringify({
-                        uploadBatchId: 0,
-                        trainingSchoolId: that.trainingSchoolId,
-                        classId: that.classId,
-                        grade: that.grade,
-                        studentId: that.studentId,
-                        correctType: that.$route.query.isWhat,
-                        photoStr: JSON.stringify(upLists),
-                        createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
-                        paperId: that.paperId,
-                        uploadType: that.tbUploadType,
-                        paperNumber: that.paperNumber,
-                        paperIdentifier: that.paperIdentifier
-
-                    })
-                } else {
-                    params = that.$Qs.stringify({
-                        uploadBatchId: that.$route.query.batchId,
-                        trainingSchoolId: that.$route.query.trainingSchoolId,
-                        classId: that.$route.query.classId,
-                        grade: that.$route.query.gradeId,
-                        studentId: that.$route.query.studentsId,
-                        correctType: that.$route.query.isWhat,
-                        photoStr: JSON.stringify(upLists),
-                        createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
-                        paperId: that.paperId,
-                        uploadType: that.tbUploadType,
-                        paperNumber: that.paperNumber,
-                        paperIdentifier: that.paperIdentifier
-                    })
-                }
-
-                that.$api.additionalWorksApi(params).then(res => {
-                    that.$toast.clear()
-                    if (res.data.code * 1 === 200) {
-                        that.isShowSuccessToast = true
-                        setTimeout(() => {
-                            window.history.go(-1)
-                        }, 1000)
+                        })
+                    } else {
+                        params = that.$Qs.stringify({
+                            uploadBatchId: that.$route.query.batchId,
+                            trainingSchoolId: that.$route.query.trainingSchoolId,
+                            classId: that.$route.query.classId,
+                            grade: that.$route.query.gradeId,
+                            studentId: that.$route.query.studentsId,
+                            correctType: that.$route.query.isWhat,
+                            photoStr: JSON.stringify(upLists),
+                            createUser: JSON.parse(sessionStorage.getItem('userInfo')).id,
+                            paperId: that.paperId,
+                            paperNumber: that.paperNumber,
+                            paperIdentifier: that.paperIdentifier
+                        })
                     }
-                })
+
+                    that.$api.additionalWorksApi(params).then(res => {
+                        that.$toast.clear()
+                        if (res.data.code * 1 === 200) {
+                            that.isShowSuccessToast = true
+                            setTimeout(() => {
+                                window.history.go(-1)
+                            }, 1000)
+                        }
+                    })
+                }
+
+                // alert(JSON.stringify(imgLists))
+                // return false;
+                // let parm = new FormData()
+                //
+                // if (imgLists && imgLists.length) { // 判断是否是多图上传 多图则循环添加进去
+                //     imgLists.forEach(item => {
+                //         parm.append('file', item)// 第一个参数字符串可以填任意命名，第二个根据对象属性来找到file
+                //     })
+                // }
+                // parm.append('folder', 'app_schoolwork_info')
+
+                // this.$toast.loading({
+                //     message: '正在提交...',
+                //     mask: true,
+                //     duration: 0
+                // })
+
+                // alert(this.serverId.join())
+                // return false;
+                //
+                // this.$api.uploadFile(parm).then(res => {
+                //     let data = res.data
+                //     let successLists = data.filter(item => item.code * 1 === 200)
+
+
+                // })
             }
         }
     }
 </script>
-
-
 <style>
     .uploadBtn .van-uploader__upload i {
         display: block;
@@ -718,8 +704,8 @@ import draggable from 'vuedraggable'
                 width: 2rem;
                 height: 2rem;
                 float: left;
-                margin-right: .2rem;
-                margin-bottom: .2rem;
+                margin-right: .3rem;
+                margin-bottom: .3rem;
                 position: relative;
 
                 .deleteImg {

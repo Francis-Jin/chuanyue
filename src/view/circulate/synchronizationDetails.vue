@@ -62,7 +62,7 @@
                 <div class="answerWrap">
 
                     <div class="allP">
-                        <p class="allPTitle"><span>批改评语</span></p>
+                        <p class="allPTitle"><span>错题提示及解析</span></p>
                         <div class="allPContent" v-html="info.schoolworkCorrectVo.remark"></div>
                     </div>
 

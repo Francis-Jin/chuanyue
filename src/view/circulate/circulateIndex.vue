@@ -157,11 +157,11 @@ export default {
           // url: '/teacherUpload?title=批改报告'
           url: '/resultSearchPage?title=批改报告&category=0'
         },
-        {
-          name: '能力测评',
-          icon: require('../../assets/icon/nl.png'),
-          url: 'abilityTesting'
-        },
+        // {
+        //   name: '能力测评',
+        //   icon: require('../../assets/icon/nl.png'),
+        //   url: 'abilityTesting'
+        // },
         {
           name: '传阅商城',
           icon: require('../../assets/icon/yh.png'),
@@ -189,11 +189,11 @@ export default {
           img: require('../../assets/icon/result.png'),
           url: '/resultSearchPage?title=批改报告&category=0'
         },
-        {
-          text: '能力测评',
-          img: require('../../assets/icon/nl.png'),
-          url: 'abilityTesting'
-        },
+        // {
+        //   text: '能力测评',
+        //   img: require('../../assets/icon/nl.png'),
+        //   url: 'abilityTesting'
+        // },
         {
           text: '传阅商城',
           img: require('../../assets/icon/yh.png'),
